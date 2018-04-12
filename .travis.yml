@@ -3,23 +3,35 @@ language: node_js
 node_js:
   - '8'
 cache: yarn
+services:
+  - mongodb
 addons:
   apt:
     packages:
       - sshpass
-jobs:
-  include:
-    - stage: before
-      install:
-        - npm i npminstall && npminstall
-      script: 
-        - npm run test
-    - stage: build
-      script: 
-        - npm run build
-    - stage: deploy
-      script:
-        - echo '123'
-      branches:
-        only:
-          - master
+before_install:
+  - service mongod start
+install:
+  - npm i npminstall && npminstall
+script: 
+  - npm run test
+after_script:
+  - npm run build
+  on: master
+# jobs:
+#   include:
+#     - stage: before
+#       before_install:
+#         - service mongod start
+#       install:
+#         - npm i npminstall && npminstall
+#       script: 
+#         - npm run test
+#     - stage: deploy
+#       script: 
+#         - npm run build
+#       after_script:
+#         - echo '123'
+#       branches:
+#         only:
+#           - master
